@@ -1,4 +1,5 @@
-﻿using ManageTask.Infrastructure.Data.Entities;
+﻿using ManageTask.Infrastructure.Data.Configurations;
+using ManageTask.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ManageTask.Infrastructure.Data.Contexts
@@ -11,6 +12,7 @@ namespace ManageTask.Infrastructure.Data.Contexts
         {
             base.OnModelCreating(modelBuilder);
             CustomModelBuilder.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyAllConfigurations();
         }
     }
 }

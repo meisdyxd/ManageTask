@@ -2,9 +2,10 @@
 {
     public enum StatusTask
     {
-        OnHold = 1,
-        InProgress = 2,
-        Success = 3,
-        Canceled = 4
+        InPendingUser = 1,
+        InProcess,
+        OnReview,
+        Success,
+        Cancelled
     }
 }

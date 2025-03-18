@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace HackBack.Infrastructure.Data.Configurations
+namespace ManageTask.Infrastructure.Data.Configurations
 {
     public interface IDbContextOptionsConfigurator<TContext> where TContext: DbContext
     {

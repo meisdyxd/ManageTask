@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ManageTask.Infrastructure.Data.Configurations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using HackBack.Infrastructure.Data.Configurations;
+
 
 namespace ManageTask.Infrastructure.Data.Configurations.Configurator
 {
