@@ -12,8 +12,10 @@ namespace ManageTask.Infrastructure.ServiceRegistration
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddRepositories()
-                .AddDbContext(configuration);
+            services
+                .AddDbContext(configuration)
+                .AddRedisCache(configuration)
+                .AddRepositories();
             return services;
         }
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -22,10 +24,20 @@ namespace ManageTask.Infrastructure.ServiceRegistration
 
             return services;
         }
-        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        private static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<ITaskRepository, TaskRepository>();
+            return services;
+        }
+        private static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("Redis")
+                ?? throw new InvalidOperationException("Redis options are not configured");
+
+            services.AddStackExchangeRedisCache(options =>
+                options.Configuration = redisConnectionString);
+
             return services;
         }
     }
