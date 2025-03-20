@@ -8,7 +8,6 @@ using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Async;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
-using System.Reflection.PortableExecutable;
 using System.Security.Claims;
 
 namespace ManageTask.Application.Services
@@ -60,7 +59,7 @@ namespace ManageTask.Application.Services
         public async Task<Result> GenerateAndSetTokensAsync(User user, Role role, HttpResponse response, CancellationToken cancellationToken)
         {
             var pair = await GenerateAccessRefreshPairAsync(user, role, cancellationToken);
-            if (!pair.IsFailure)
+            if (pair.IsFailure)
             {
                 return Error.Failure("Не удалось сгенерировать пару access-token и refresh-token");
             }

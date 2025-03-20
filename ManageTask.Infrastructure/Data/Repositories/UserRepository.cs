@@ -3,6 +3,7 @@ using ManageTask.Domain;
 using ManageTask.Infrastructure.Data.Contexts;
 using ManageTask.Infrastructure.Data.Entities;
 using ManageTask.Infrastructure.Data.Mappers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ResultSharp.Core;
 using ResultSharp.Errors;
@@ -67,7 +68,7 @@ namespace ManageTask.Infrastructure.Data.Repositories
         {
             logger.LogInformation("Получение пользователя с почтой: {Email}", email);
 
-            var entity = await context.Users.FindAsync(keyValues: [email], cancellationToken: cancellationToken);
+            var entity = await context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
             if (entity is null)
             {
                 logger.LogWarning("Пользователь с почтой: {Email}, для получения не найден", email);

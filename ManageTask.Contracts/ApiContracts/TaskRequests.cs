@@ -2,17 +2,13 @@
 
 namespace ManageTask.Contracts.ApiContracts
 {
-    public enum PublicTypeTask
-    {
-        Assigned = TypeTask.Assigned,
-        Pool = TypeTask.Pool
-    }
     public enum PublicStatusTask
     {
-        OnHold = StatusTask.OnHold,
-        InProgress = StatusTask.InProgress,
+        InPendingUser = StatusTask.InPendingUser,
+        InProcess = StatusTask.InProcess,
+        OnReview = StatusTask.OnReview,
         Success = StatusTask.Success,
-        Canceled = StatusTask.Canceled
+        Cancelled = StatusTask.Cancelled
     }
-    public record RequestTask(string Titile, string Description, PublicStatusTask Status, Guid CreatedById, Guid AssignedToId, PublicTypeTask TypeTask);
+    public record RequestTask(string Titile, string Description, PublicStatusTask Status, bool IsAssigned, Guid CreatedById, Guid AssignedToId);
 }

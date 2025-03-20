@@ -14,6 +14,7 @@ namespace ManageTask.Application.ServiceRegistration
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<ITaskService, TaskService>()
+                .AddScoped<IAccountService, AccountService>()
                 .AddScoped<IAuthService, AuthService>();
             return services;
         }

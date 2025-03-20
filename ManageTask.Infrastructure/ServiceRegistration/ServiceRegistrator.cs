@@ -1,7 +1,11 @@
-﻿using ManageTask.Application.Abstractions.Data;
+﻿using ManageTask.Application.Abstractions.Auth;
+using ManageTask.Application.Abstractions.Data;
+using ManageTask.Infrastructure.Auth;
 using ManageTask.Infrastructure.Data.Configurations.RegistrationExtension;
 using ManageTask.Infrastructure.Data.Contexts;
 using ManageTask.Infrastructure.Data.Repositories;
+using ManageTask.Infrastructure.ServiceRegistration.Options;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using static ManageTask.Infrastructure.Data.Contexts.DataContextConfiguration;
@@ -15,7 +19,19 @@ namespace ManageTask.Infrastructure.ServiceRegistration
             services
                 .AddDbContext(configuration)
                 .AddRedisCache(configuration)
-                .AddRepositories();
+                .LoadOptions(configuration)
+                .AddRepositories()
+                .AddAuth();
+            return services;
+        }
+        private static IServiceCollection LoadOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<PasswordManagerOptions>(
+                configuration.GetSection(nameof(PasswordManagerOptions)));
+
+            services.Configure<JwtOptions>(
+                configuration.GetSection(nameof(JwtOptions)));
+
             return services;
         }
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
@@ -28,6 +44,15 @@ namespace ManageTask.Infrastructure.ServiceRegistration
         {
             services.AddScoped<IUserRepository, UserRepository>()
                 .AddScoped<ITaskRepository, TaskRepository>();
+            return services;
+        }
+
+        private static IServiceCollection AddAuth(this IServiceCollection services)
+        {
+            services.AddScoped<IJwtProvider, JwtProvider>()
+                .AddScoped<IPasswordManager, PasswordManager>()
+                .AddScoped<ITokenStorage, TokenStorage>();
+
             return services;
         }
         private static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
