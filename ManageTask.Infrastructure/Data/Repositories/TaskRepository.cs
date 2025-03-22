@@ -63,24 +63,6 @@ namespace ManageTask.Infrastructure.Data.Repositories
             logger.LogInformation("Задача с ID: {TaskId} получена", id);
             return entity.Map();
         }
-        public Result<IQueryable<Domain.Task>> GetByIdCreatorAsync(Guid id, CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Получение задач с ID создателя: {UserId}", id);
-
-            var tasks = context.Tasks.Where(t => t.CreatedById == id).Select(t => t.Map()).AsQueryable();
-
-            logger.LogInformation("Задачи с ID создателя: {UserId} получены", id);
-            return Result<IQueryable<Domain.Task>>.Success(tasks);
-        }
-        public Result<IQueryable<Domain.Task>> GetByIdAssignedAsync(Guid id, CancellationToken cancellationToken)
-        {
-            logger.LogInformation("Получение задач с ID назначенного пользователя: {UserId}", id);
-
-            var tasks = context.Tasks.Where(t => t.AssignedToId == id).Select(t => t.Map()).AsQueryable();
-
-            logger.LogInformation("Задачи с ID назначеноого пользователя: {UserId} получены", id);
-            return Result<IQueryable<Domain.Task>>.Success(tasks);
-        }
 
         public async Task<Result<Domain.Task>> UpdateAsync(Domain.Task task, CancellationToken cancellationToken)
         {

@@ -10,5 +10,5 @@ namespace ManageTask.Contracts.ApiContracts
         Success = StatusTask.Success,
         Cancelled = StatusTask.Cancelled
     }
-    public record RequestTask(string Titile, string Description, PublicStatusTask Status, bool IsAssigned, Guid CreatedById, Guid AssignedToId);
+    public record RequestTask(string Titile, string Description, PublicStatusTask Status, bool IsAssigned, Guid AssignedToId);
 }
