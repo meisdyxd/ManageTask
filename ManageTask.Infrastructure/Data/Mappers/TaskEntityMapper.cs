@@ -4,7 +4,7 @@ namespace ManageTask.Infrastructure.Data.Mappers
 {
     public static class TaskEntityMapper
     {
-        public static Domain.Task Map(this TaskEntity entity)
+        public static Domain.TaskM Map(this TaskEntity entity)
             => new
             (
                 entity.Id,
@@ -15,7 +15,7 @@ namespace ManageTask.Infrastructure.Data.Mappers
                 entity.CreatedById,
                 entity.AssignedToId
             );
-        public static TaskEntity Map(this Domain.Task task)
+        public static TaskEntity Map(this Domain.TaskM task)
             => new()
             {
                 Id = task.Id,

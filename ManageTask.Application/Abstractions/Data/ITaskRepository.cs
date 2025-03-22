@@ -2,7 +2,7 @@
 using ResultSharp.Core;
 namespace ManageTask.Application.Abstractions.Data
 {
-    public interface ITaskRepository: IRepository<Domain.Task, Guid>
+    public interface ITaskRepository: IRepository<Domain.TaskM, Guid>
     {
     }
 }

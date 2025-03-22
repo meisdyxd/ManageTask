@@ -9,8 +9,10 @@ namespace ManageTask.Infrastructure.Data.Contexts.Configurations
         public void Configure(EntityTypeBuilder<TaskEntity> builder)
         {
             builder.HasKey(t => t.Id);
-            builder.HasIndex(t => t.CreatedById);
-            builder.HasIndex(t => t.AssignedToId);
+            builder.HasIndex(t => t.CreatedById)
+                .IsUnique(false);
+            builder.HasIndex(t => t.AssignedToId)
+                .IsUnique(false);
             builder.Property(t => t.Status)
                 .HasConversion<string>();
         }

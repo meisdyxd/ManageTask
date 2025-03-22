@@ -14,7 +14,7 @@ namespace ManageTask.Infrastructure.Data.Entities
         public Guid? AssignedToId { get; set; }
 
         //NAV
-        public UserEntity CreatedBy { get; set; } = new();
-        public UserEntity? AssignedTo { get; set; } = new();
+        public UserEntity CreatedBy { get; set; }
+        public UserEntity? AssignedTo { get; set; }
     }
 }

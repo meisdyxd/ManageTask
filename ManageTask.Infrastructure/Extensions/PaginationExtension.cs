@@ -10,7 +10,7 @@ namespace ManageTask.Application.Extensions
     internal static class PaginationExtension
     {
         //private static readonly ILogger logger = LoggerUtil.CreateLogger(nameof(PaginationExtension));
-        public static async Task<Result<Paginated<T>>> AsPaginatedAsync<T>(this IQueryable<T> query, 
+        public static async Task<Result<List<TEntity>>> AsPaginatedAsync<TEntity>(this IQueryable<TEntity> query, 
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken)
         {
             try 
@@ -20,17 +20,7 @@ namespace ManageTask.Application.Extensions
                     .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
                     .Take(paginationParams.PageSize)
                     .ToListAsync(cancellationToken);
-                var totalItems = result.LongCount();
-                var totalPages = (int)Math.Ceiling((double)(totalItems/paginationParams.PageSize));
-
-                return new Paginated<T>()
-                {
-                    Items = result,
-                    PaginationParams = paginationParams,
-                    TotalPages = totalPages,
-                    HasPreviewPage = paginationParams.PageNumber > PaginationParams.StartPage,
-                    HasNextPage = paginationParams.PageNumber < totalPages
-                };
+                return result;
             }
             catch (Exception)
             {

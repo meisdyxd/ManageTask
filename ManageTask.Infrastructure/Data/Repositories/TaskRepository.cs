@@ -1,4 +1,5 @@
 ﻿using ManageTask.Application.Abstractions.Data;
+using ManageTask.Application.Models.Pagination;
 using ManageTask.Domain;
 using ManageTask.Infrastructure.Data.Contexts;
 using ManageTask.Infrastructure.Data.Entities;
@@ -7,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using ResultSharp.Core;
 using ResultSharp.Errors;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
+using ManageTask.Application.Extensions;
+using ResultSharp.Extensions.FunctionalExtensions.Async;
 
 namespace ManageTask.Infrastructure.Data.Repositories
 {
@@ -14,12 +17,12 @@ namespace ManageTask.Infrastructure.Data.Repositories
     {
         private readonly ILogger<TaskRepository> logger = logger;
         private readonly DataContext context = context;
-        public async Task<Result<Domain.Task>> AddAsync(Domain.Task task, CancellationToken cancellationToken)
+        public async Task<Result<Domain.TaskM>> AddAsync(Domain.TaskM task, CancellationToken cancellationToken)
         {
             logger.LogInformation("Добавление задачи с ID: {TaskId}", task.Id);
 
             var entity = GetTaskEntity(task);
-            await context.AddAsync(entity, cancellationToken);
+            await context.Tasks.AddAsync(entity, cancellationToken);
             await context.SaveChangesAsync();
 
             logger.LogInformation("Задача с ID: {TaskId} добавлена", entity.Id);
@@ -43,13 +46,15 @@ namespace ManageTask.Infrastructure.Data.Repositories
             return Result.Success();
         }
 
-        public Result<IQueryable<Domain.Task>> GetAll()
+        public async Task<Result<IQueryable<Domain.TaskM>>> GetAllAsync(PaginationParams paginationParams, SortParams? sortParams, 
+            CancellationToken cancellationToken)
         {
-            logger.LogInformation($"Получение всех задач");
-            return Result<IQueryable<Domain.Task>>.Success(context.Tasks.Select(u => u.Map()).AsQueryable());
+            logger.LogInformation($"Получение задач");
+            var paginationResult = await context.Tasks.AsQueryable().AsPaginatedAsync(paginationParams, sortParams, cancellationToken);
+            return Result<IQueryable<Domain.TaskM>>.Success(paginationResult.Value.Select(t => t.Map()).AsQueryable());
         }
 
-        public async Task<Result<Domain.Task>> GetAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Result<Domain.TaskM>> GetAsync(Guid id, CancellationToken cancellationToken)
         {
             logger.LogInformation("Получение задачи с ID: {TaskId}", id);
 
@@ -64,7 +69,7 @@ namespace ManageTask.Infrastructure.Data.Repositories
             return entity.Map();
         }
 
-        public async Task<Result<Domain.Task>> UpdateAsync(Domain.Task task, CancellationToken cancellationToken)
+        public async Task<Result<Domain.TaskM>> UpdateAsync(Domain.TaskM task, CancellationToken cancellationToken)
         {
             logger.LogInformation("Обновление задачи с ID: {TaskId}", task.Id);
 
@@ -76,9 +81,9 @@ namespace ManageTask.Infrastructure.Data.Repositories
             return entity.Map();
         }
 
-        public TaskEntity GetTaskEntity(Domain.Task task)
+        public TaskEntity GetTaskEntity(Domain.TaskM task)
         {
             return task.Map();
-        } 
+        }
     }
 }

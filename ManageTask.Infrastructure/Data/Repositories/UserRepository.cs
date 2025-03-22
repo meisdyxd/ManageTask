@@ -1,4 +1,6 @@
 ﻿using ManageTask.Application.Abstractions.Data;
+using ManageTask.Application.Extensions;
+using ManageTask.Application.Models.Pagination;
 using ManageTask.Domain;
 using ManageTask.Infrastructure.Data.Contexts;
 using ManageTask.Infrastructure.Data.Entities;
@@ -7,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ResultSharp.Core;
 using ResultSharp.Errors;
+using System.Threading;
 
 namespace ManageTask.Infrastructure.Data.Repositories
 {
@@ -44,10 +47,12 @@ namespace ManageTask.Infrastructure.Data.Repositories
             return Result.Success();
         }
 
-        public Result<IQueryable<User>> GetAll()
+        public async Task<Result<IQueryable<User>>> GetAllAsync(PaginationParams paginationParams, SortParams? sortParams,
+            CancellationToken cancellationToken)
         {
-            logger.LogInformation($"Получение всех пользователей");
-            return Result<IQueryable<User>>.Success(context.Users.Select(u => u.Map()).AsQueryable());
+            logger.LogInformation($"Получение пользователей");
+            var paginationResult = await context.Users.AsQueryable().AsPaginatedAsync(paginationParams, sortParams, cancellationToken);
+            return Result<IQueryable<User>>.Success(paginationResult.Value.Select(t => t.Map()).AsQueryable());
         }
 
         public async Task<Result<User>> GetAsync(Guid id, CancellationToken cancellationToken)

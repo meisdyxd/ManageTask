@@ -1,4 +1,6 @@
-﻿namespace ManageTask.Contracts.ApiContracts
+﻿using ManageTask.Domain;
+
+namespace ManageTask.Contracts.ApiContracts
 {
-    public record TaskResponse(Guid Id, string Title, string Description, bool Status, Guid CreatedById, Guid AssignedToId, IEnumerable<string> TaskTypes);
+    public record TaskResponse(Guid Id, string Title, string Description, StatusTask Status, bool IsAssigned, Guid CreatedById, Guid? AssignedToId);
 }

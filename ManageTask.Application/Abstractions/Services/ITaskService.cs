@@ -8,22 +8,22 @@ namespace ManageTask.Application.Abstractions.Services
 {
     public interface ITaskService
     {
-        Task<Result<Domain.Task>> UpdateAsync(Domain.Task task, CancellationToken cancellationToken);
-        Task<Result<Domain.Task>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<Result<Domain.Task>> AddToPoolAsync(RequestTask task, HttpRequest request, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetAllAsync(PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetCurrentAsync(HttpRequest httpRequest,
+        Task<Result<Domain.TaskM>> UpdateAsync(Domain.TaskM task, CancellationToken cancellationToken);
+        Task<Result<Domain.TaskM>> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<Result<Domain.TaskM>> AddToPoolAsync(RequestTask task, HttpRequest request, CancellationToken cancellationToken);
+        Task<Result<Paginated<Domain.TaskM>>> GetAll(PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
+        Task<Result<Paginated<Domain.TaskM>>> GetCurrentAsync(HttpRequest httpRequest,
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetCreatedAsync(HttpRequest httpRequest,
+        Task<Result<Paginated<Domain.TaskM>>> GetCreatedAsync(HttpRequest httpRequest,
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetByIdAssignedAsync(Guid assignedId,
+        Task<Result<Paginated<Domain.TaskM>>> GetByIdAssignedAsync(Guid assignedId,
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetByIdCreatorAsync(Guid creatorId,
+        Task<Result<Paginated<Domain.TaskM>>> GetByIdCreatorAsync(Guid creatorId,
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetByStatusCurrentUserAsync(StatusTask statusTask, HttpRequest httpRequest,
+        Task<Result<Paginated<Domain.TaskM>>> GetByStatusCurrentUserAsync(StatusTask statusTask, HttpRequest httpRequest,
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Paginated<Domain.Task>>> GetFromPoolAsync(
+        Task<Result<Paginated<Domain.TaskM>>> GetFromPoolAsync(
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
-        Task<Result<Domain.Task>> AddToUserAsync(RequestTask task, Guid assignedId, HttpRequest request, CancellationToken cancellationToken);
+        Task<Result<Domain.TaskM>> AddToUserAsync(RequestTask task, Guid assignedId, HttpRequest request, CancellationToken cancellationToken);
     }
 }

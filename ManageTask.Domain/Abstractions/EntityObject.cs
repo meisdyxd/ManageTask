@@ -2,7 +2,7 @@
 {
     public abstract class EntityObject<T>(T id)
     {
-        public T Id { get; protected set; } = id ?? throw new ArgumentNullException(nameof(id), "Id cannot be null");
+        public T Id { get; set; } = id ?? throw new ArgumentNullException(nameof(id), "Id cannot be null");
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
