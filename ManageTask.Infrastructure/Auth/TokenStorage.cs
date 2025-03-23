@@ -1,9 +1,11 @@
 ﻿using ManageTask.Application.Abstractions.Auth;
+using ManageTask.Domain;
 using ManageTask.Infrastructure.ServiceRegistration.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using ResultSharp.Core;
 using ResultSharp.Errors;
+using StackExchange.Redis;
 
 namespace ManageTask.Infrastructure.Auth
 {
@@ -22,6 +24,7 @@ namespace ManageTask.Infrastructure.Auth
         public async Task<Result<(string token, Guid userId)>> GetTokenAsync(string token, CancellationToken cancellationToken)
         {
             var key = string.Format(keyFormat, token);
+
             var storedToken = await redisCache.GetStringAsync(key, cancellationToken);
             if (storedToken is null)
             {
@@ -37,10 +40,16 @@ namespace ManageTask.Infrastructure.Auth
         public async Task<Result> SetTokenAsync(string token, Guid userId, CancellationToken cancellationToken)
         {
             var key = string.Format(keyFormat, token);
-            await redisCache.SetStringAsync(key, userId.ToString(), new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = tokenLifeTime,
-            }, cancellationToken);
+            await redisCache.SetStringAsync
+                (
+                    key, 
+                    userId.ToString(), 
+                    new DistributedCacheEntryOptions()
+                        {
+                            AbsoluteExpirationRelativeToNow = tokenLifeTime,
+                        }, 
+                    cancellationToken
+                );
             return Result.Success();
         }
     }

@@ -54,7 +54,7 @@ namespace ManageTask.API.Controllers
         public async Task<IActionResult> Cancel(Guid taskId)
         {
             var tokenSource = new CancellationTokenSource();
-            var result = await taskService.CancelAsync(taskId, HttpContext.Request, tokenSource.Token);
+            var result = await taskService.ChangeStatusAsync(taskId, HttpContext.Request, Domain.StatusTask.Cancelled, tokenSource.Token);
             tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
             return result
                 .LogErrorMessages(logLevel: LogLevel.Warning)
@@ -66,6 +66,39 @@ namespace ManageTask.API.Controllers
         {
             var tokenSource = new CancellationTokenSource();
             var result = await taskService.UpdateAsync(requestTask, taskId, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
+        [Authorize]
+        [HttpPost("check-out")]
+        public async Task<IActionResult> CheckOut(Guid taskId)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await taskService.ChangeStatusAsync(taskId, HttpContext.Request, Domain.StatusTask.OnReview, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
+        [Authorize]
+        [HttpPost("complete")]
+        public async Task<IActionResult> Complete(Guid taskId)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await taskService.ChangeStatusAsync(taskId, HttpContext.Request, Domain.StatusTask.Success, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
+        [Authorize]
+        [HttpPost("take")]
+        public async Task<IActionResult> Take(Guid taskId)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await taskService.TakeAsync(taskId, HttpContext.Request, tokenSource.Token);
             tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
             return result
                 .LogErrorMessages(logLevel: LogLevel.Warning)

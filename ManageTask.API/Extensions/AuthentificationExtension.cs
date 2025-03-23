@@ -25,6 +25,11 @@ namespace ManageTask.API.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
                     };
                 });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("AdminAndManager", policy => policy.RequireRole("Admin", "Manager"));
+            });
 
             return services;
         }

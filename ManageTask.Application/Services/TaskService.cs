@@ -236,7 +236,7 @@ namespace ManageTask.Application.Services
             return await taskRepository.UpdateAsync(updatedTask, cancellationToken);
         }
 
-        public async Task<Result<Domain.TaskM>> CancelAsync(Guid taskId, HttpRequest request, CancellationToken cancellationToken)
+        public async Task<Result<Domain.TaskM>> ChangeStatusAsync(Guid taskId, HttpRequest request, StatusTask statusTask, CancellationToken cancellationToken)
         {
             var creator = await accountService.GetCurrentUserAsync(request, cancellationToken);
             if (creator.IsFailure)
@@ -252,11 +252,31 @@ namespace ManageTask.Application.Services
             {
                 return Error.Forbidden("Доступ ограничен");
             }
-            task.Value.Status = StatusTask.Cancelled;
+            task.Value.Status = statusTask;
             var cancelledTask = await taskRepository.UpdateAsync(task, cancellationToken);
             return cancelledTask;
         }
-
+        public async Task<Result<Domain.TaskM>> TakeAsync(Guid taskId, HttpRequest request, CancellationToken cancellationToken)
+        {
+            var currentUser = await accountService.GetCurrentUserAsync(request, cancellationToken);
+            if (currentUser.IsFailure)
+            {
+                return Error.Unauthorized("Для создания задачи, вам необходимо авторизоваться");
+            }
+            var task = await taskRepository.GetAsync(taskId, cancellationToken);
+            if (task.IsFailure)
+            {
+                return Error.Failure("Ошибка получения задачи");
+            }
+            if (task.Value.IsAssigned && task.Value.Status != StatusTask.InPendingUser)
+            {
+                return Error.Forbidden("Доступ ограничен");
+            }
+            task.Value.IsAssigned = true;
+            task.Value.AssignedToId = currentUser.Value.Id;
+            var cancelledTask = await taskRepository.UpdateAsync(task, cancellationToken);
+            return cancelledTask;
+        }
 
     }
 }

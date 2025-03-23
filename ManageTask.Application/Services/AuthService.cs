@@ -9,6 +9,8 @@ using ResultSharp.Extensions.FunctionalExtensions.Async;
 using ResultSharp.Extensions.FunctionalExtensions.Sync;
 using ResultSharp.Logging;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text;
 
 namespace ManageTask.Application.Services
 {
@@ -106,6 +108,65 @@ namespace ManageTask.Application.Services
                 : Error.Unauthorized("Недействительный токен")
                 ));
         }
+        public Result<Role> GetRoleFromUserIdToken(HttpRequest request)
+        {
+            var token = GetTokenFromHeader(request);
+            var role = GetClaimsFromTokenWithoutValidation(token);
+            return role;
+        }
+        public static Result<Role> GetClaimsFromTokenWithoutValidation(string token)
+        {
+            try
+            {
+                // Разделяем токен на части
+                var tokenParts = token.Split('.');
+                if (tokenParts.Length != 3)
+                {
+                    return Error.Failure("Проблема расшифровки access-token'a");
+                }
+
+                // Получаем часть payload
+                var payload = tokenParts[1];
+
+                // Декодируем Base64Url
+                var payloadBytes = Base64UrlDecode(payload);
+                var payloadJson = Encoding.UTF8.GetString(payloadBytes);
+
+                // Десериализуем JSON в словарь
+                var claims = JsonSerializer.Deserialize<Dictionary<string, object>>(payloadJson);
+                foreach(var claim in claims)
+                {
+                    if (claim.Key == CustomClaimTypes.UserRole)
+                    {
+                        return Result<Role>.Success((Role)Enum.Parse(typeof(Role), claim.Value.ToString()));
+                    }
+                }
+
+                return Error.Failure("Проблема получения роли");
+            }
+            catch (Exception ex)
+            {
+                return Error.Failure("Проблема расшифровки access-token'a");
+            }
+        }
+
+        private static byte[] Base64UrlDecode(string input)
+        {
+            // Заменяем символы Base64Url на стандартные Base64
+            var base64 = input
+                .Replace('-', '+')
+                .Replace('_', '/');
+
+            // Добавляем недостающие символы '='
+            switch (base64.Length % 4)
+            {
+                case 2: base64 += "=="; break;
+                case 3: base64 += "="; break;
+            }
+
+            // Декодируем Base64
+            return Convert.FromBase64String(base64);
+        }
         private static Result<string> GetTokenFromHeader(HttpRequest request, string header = AuthorizationHeader)
         {
             if (!request.Headers.TryGetValue(header, out var token) || string.IsNullOrEmpty(token))
@@ -154,12 +215,12 @@ namespace ManageTask.Application.Services
             if (tokenUserIdPair.IsFailure)
                 return tokenUserIdPair.Errors.First();
 
-            var (_, userId) = tokenUserIdPair.Value;
+            var (token, userId) = tokenUserIdPair.Value;
 
             if (userId != user.Id)
                 return Error.Unauthorized("Недействительный токен");
 
-            return GetRoleFromAccessToken(request)
+            return GetRoleFromUserIdToken(request)
                 .Then(role => GenerateAccessToken(user, role))
                 .Then(accessToken => SetTokenToHeader(response, accessToken, AuthorizationHeader))
                 .LogIfSuccess(

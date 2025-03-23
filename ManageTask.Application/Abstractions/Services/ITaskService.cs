@@ -25,6 +25,7 @@ namespace ManageTask.Application.Abstractions.Services
         Task<Result<Paginated<Domain.TaskM>>> GetFromPoolAsync(
             PaginationParams paginationParams, SortParams? sortParams, CancellationToken cancellationToken);
         Task<Result<Domain.TaskM>> AddToUserAsync(RequestTask task, Guid assignedId, HttpRequest request, CancellationToken cancellationToken);
-        Task<Result<Domain.TaskM>> CancelAsync(Guid taskId, HttpRequest request, CancellationToken cancellationToken);
+        Task<Result<Domain.TaskM>> ChangeStatusAsync(Guid taskId, HttpRequest request, StatusTask statusTask, CancellationToken cancellationToken);
+        Task<Result<Domain.TaskM>> TakeAsync(Guid taskId, HttpRequest request, CancellationToken cancellationToken);
     }
 }
