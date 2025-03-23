@@ -10,7 +10,7 @@ namespace ManageTask.Application.Abstractions.Services
         Task<Result<string>> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken);
         Task<Result<(string accessToken, string refreshToken)>> GenerateAccessRefreshPairAsync(User user, Role role, CancellationToken cancellationToken);
         Task<Result> GenerateAndSetTokensAsync(User user, Role role, HttpResponse response, CancellationToken cancellationToken);
-        Result<Guid> GetUserIdFromAccessToken(HttpRequest request);
+        Result<Guid> GetUserIdFromAccessToken(HttpRequest request, bool isRefresh = false);
         Result<Role> GetRoleFromAccessToken(HttpRequest request);
         Result ValidateToken(HttpRequest request, string header);
         Task<Result> ClearTokensAsync(HttpRequest request, HttpResponse response, CancellationToken cancellationToken);

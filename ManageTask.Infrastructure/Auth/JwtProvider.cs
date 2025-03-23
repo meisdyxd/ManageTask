@@ -32,15 +32,15 @@ namespace ManageTask.Infrastructure.Auth
             }
         }
 
-        public Result<string> GenerateRefreshToken()
+        public Result<string> GenerateRefreshToken(IEnumerable<Claim> claims)
         {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-
                 var tokenDescriptor = GetTokenDescriptor(
                     options.Secret,
-                    options.RefreshTokenExpirationHours
+                    options.RefreshTokenExpirationHours,
+                    claims.ToArray()
                 );
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);

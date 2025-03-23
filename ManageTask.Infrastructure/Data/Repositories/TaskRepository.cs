@@ -73,7 +73,7 @@ namespace ManageTask.Infrastructure.Data.Repositories
         {
             logger.LogInformation("Обновление задачи с ID: {TaskId}", task.Id);
 
-            var entity = task.Map();
+            var entity = GetTaskEntity(task);
             context.Tasks.Update(entity);
             await context.SaveChangesAsync(cancellationToken);
 

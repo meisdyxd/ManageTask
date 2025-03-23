@@ -72,7 +72,11 @@ namespace ManageTask.Application.Services
 
         public async Task<Result<string>> GenerateRefreshTokenAsync(User user, CancellationToken cancellationToken)
         {
-            var token = jwtProvider.GenerateRefreshToken();
+            var claims = new List<Claim>()
+            {
+                new (CustomClaimTypes.UserId, user.Id.ToString()),
+            };
+            var token = jwtProvider.GenerateRefreshToken(claims);
             
             if (token.IsFailure)
             {
@@ -128,9 +132,9 @@ namespace ManageTask.Application.Services
             return parseFunc(((Claim)claim).Value);
         }
 
-        public Result<Guid> GetUserIdFromAccessToken(HttpRequest request)
+        public Result<Guid> GetUserIdFromAccessToken(HttpRequest request, bool isRefresh = false)
         {
-            return GetTokenFromHeader(request).Then(token => GetClaimFromToken(
+            return GetTokenFromHeader(request, (isRefresh?RefreshTokenHeader:AuthorizationHeader)).Then(token => GetClaimFromToken(
                 token,
                 CustomClaimTypes.UserId,
                 value => Guid.TryParse(value, out Guid id)

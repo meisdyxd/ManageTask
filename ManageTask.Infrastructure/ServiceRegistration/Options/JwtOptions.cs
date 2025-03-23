@@ -3,7 +3,7 @@
     public class JwtOptions
     {
         public required string Secret { get; set; }
-        public int AccessTokenExpirationHours { get; set; } = 24;
+        public int AccessTokenExpirationHours { get; set; } = 1;
         public int RefreshTokenExpirationHours { get; set; } = 720;
         public TokenValidationOptions TokenValidation { get; set; } = new();
     }

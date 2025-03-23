@@ -8,6 +8,6 @@ namespace ManageTask.Application.Abstractions.Auth
     {
         public Result<string> GenerateAccessToken(IEnumerable<Claim> claims);
         Result<IEnumerable<Claim>> ValidateToken(string token);
-        Result<string> GenerateRefreshToken();
+        Result<string> GenerateRefreshToken(IEnumerable<Claim> claims);
     }
 }

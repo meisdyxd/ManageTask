@@ -15,7 +15,7 @@ namespace ManageTask.API.Controllers
     public class TaskController(ITaskService taskService) : ControllerBase
     {
         readonly ITaskService taskService = taskService;
-        [Authorize]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAll(int page, int pageSize)
         {
@@ -27,8 +27,8 @@ namespace ManageTask.API.Controllers
                 .LogErrorMessages(logLevel: LogLevel.Warning)
                 .ToResponse();
         }
-        [Authorize]
-        [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpPost("to-pool")]
         public async Task<IActionResult> AddToPool(RequestTask task)
         {
             var tokenSource = new CancellationTokenSource();
@@ -38,12 +38,34 @@ namespace ManageTask.API.Controllers
                 .LogErrorMessages(logLevel: LogLevel.Warning)
                 .ToResponse();
         }
-        [Authorize]
-        [HttpPost("assignedid")]
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpPost("to-user")]
         public async Task<IActionResult> AddToUser(RequestTask task, Guid assignedid)
         {
             var tokenSource = new CancellationTokenSource();
             var result = await taskService.AddToUserAsync(task, assignedid, HttpContext.Request, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
+        [Authorize]
+        [HttpPut("cancel")]
+        public async Task<IActionResult> Cancel(Guid taskId)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await taskService.CancelAsync(taskId, HttpContext.Request, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpPut]
+        public async Task<IActionResult> Update(Guid taskId, RequestTask requestTask)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await taskService.UpdateAsync(requestTask, taskId, tokenSource.Token);
             tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
             return result
                 .LogErrorMessages(logLevel: LogLevel.Warning)

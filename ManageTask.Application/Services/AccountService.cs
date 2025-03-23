@@ -17,9 +17,9 @@ namespace ManageTask.Application.Services
         private readonly IAuthService authService = authService;
         private readonly IPasswordManager passwordManager = passwordManager;
 
-        public async Task<Result<User>> GetCurrentUserAsync(HttpRequest request, CancellationToken cancellationToken)
+        public async Task<Result<User>> GetCurrentUserAsync(HttpRequest request, CancellationToken cancellationToken, bool isRefresh = false)
         {
-            return await authService.GetUserIdFromAccessToken(request)
+            return await authService.GetUserIdFromAccessToken(request, isRefresh)
                 .ThenAsync(id => userRepository.GetAsync(id, cancellationToken))
                 .LogIfFailureAsync("Ошибка при получении текущего аккаунта");
         }
@@ -48,7 +48,7 @@ namespace ManageTask.Application.Services
 
         public async Task<Result> RefreshToken(HttpRequest request, HttpResponse response, CancellationToken cancellationToken)
         {
-            return await GetCurrentUserAsync(request, cancellationToken)
+            return await GetCurrentUserAsync(request, cancellationToken, true)
                 .ThenAsync(user => authService.RefreshAccessTokenAsync(request, response, user, cancellationToken));
         }
 
