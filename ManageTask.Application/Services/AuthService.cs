@@ -11,10 +11,11 @@ using ResultSharp.Logging;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text;
+using ManageTask.Application.Abstractions.Data;
 
 namespace ManageTask.Application.Services
 {
-    public class AuthService(IJwtProvider jwtProvider, ITokenStorage tokenStorage) : IAuthService
+    public class AuthService(IJwtProvider jwtProvider, ITokenStorage tokenStorage, IUserRepository userRepository) : IAuthService
     {
         private const string BearerPrefix = "Bearer ";
         public const string AuthorizationHeader = "Authorization";
@@ -22,6 +23,7 @@ namespace ManageTask.Application.Services
 
         private readonly IJwtProvider jwtProvider = jwtProvider;
         private readonly ITokenStorage tokenStorage = tokenStorage;
+        private readonly IUserRepository userRepository = userRepository;
         public async Task<Result> ClearTokensAsync(HttpRequest request, HttpResponse response, CancellationToken cancellationToken)
         {
             response.Headers.Remove(AuthorizationHeader);
@@ -108,11 +110,14 @@ namespace ManageTask.Application.Services
                 : Error.Unauthorized("Недействительный токен")
                 ));
         }
-        public Result<Role> GetRoleFromUserIdToken(HttpRequest request)
+        public Result<Role> GetRoleFromUserId(Guid id, CancellationToken cancellationToken)
         {
-            var token = GetTokenFromHeader(request);
-            var role = GetClaimsFromTokenWithoutValidation(token);
-            return role;
+            var user = userRepository.GetAsync(id, cancellationToken).Result;
+            if (user.IsFailure)
+            {
+                return Error.Failure("Ошибка получения пользователя для обновления access-token'a");
+            }
+            return user.Value.Role;
         }
         public static Result<Role> GetClaimsFromTokenWithoutValidation(string token)
         {
@@ -220,7 +225,9 @@ namespace ManageTask.Application.Services
             if (userId != user.Id)
                 return Error.Unauthorized("Недействительный токен");
 
-            return GetRoleFromUserIdToken(request)
+            
+
+            return GetRoleFromUserId(userId, cancellationToken)
                 .Then(role => GenerateAccessToken(user, role))
                 .Then(accessToken => SetTokenToHeader(response, accessToken, AuthorizationHeader))
                 .LogIfSuccess(
