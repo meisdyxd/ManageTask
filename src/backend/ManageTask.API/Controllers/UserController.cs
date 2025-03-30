@@ -53,5 +53,16 @@ namespace ManageTask.API.Controllers
                 .LogErrorMessages(logLevel: LogLevel.Warning)
                 .ToResponse();
         }
+        [HttpGet("for-test")]
+        public async Task<IActionResult> GetAdmin(Guid id)
+        {
+            var tokenSource = new CancellationTokenSource();
+            var result = await accountService.GetAdminAsync(id, tokenSource.Token);
+            tokenSource.CancelAfter(CommonConstants.WaitBeforeCancel);
+
+            return result
+                .LogErrorMessages(logLevel: LogLevel.Warning)
+                .ToResponse();
+        }
     }
 }

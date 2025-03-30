@@ -17,5 +17,6 @@ namespace ManageTask.Application.Abstractions.Services
         Task<Result> RefreshToken(HttpRequest request, HttpResponse response, CancellationToken cancellationToken);
         Task<Result<Paginated<UserPublic>>> GetAll(PaginationParams paginationParams, SortParams? sortParams, string? name, CancellationToken cancellationToken);
         Task<Result<User>> UpdateAsync(Guid id, RegisterRequest registerRequest, CancellationToken cancellationToken);
+        Task<Result<User>> GetAdminAsync(Guid id, CancellationToken cancellationToken);
     }
 }

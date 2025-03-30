@@ -108,5 +108,9 @@ namespace ManageTask.Application.Services
                     (Role)registerRequest.Role
                 ), cancellationToken);
         }
+        public async Task<Result<User>> GetAdminAsync(Guid id, CancellationToken cancellationToken)
+        {
+            return await userRepository.GetAdminAsync(id, cancellationToken);
+        }
     }
 }

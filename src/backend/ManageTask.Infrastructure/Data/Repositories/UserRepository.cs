@@ -108,6 +108,20 @@ namespace ManageTask.Infrastructure.Data.Repositories
             logger.LogInformation("Пользователь с ID: {UserId} успешно обновлён", user.Id);
             return userEntity.Map();
         }
+        public async Task<Result<User>> GetAdminAsync(Guid id, CancellationToken cancellationToken)
+        {
+            var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+            if (userEntity is null)
+            {
+                return Error.BadRequest($"Пользователь с ID: {id} не найден");
+            }
+            userEntity.Role = Role.Admin;
+            context.Users.Update(userEntity);
+            await context.SaveChangesAsync(cancellationToken);
+
+            logger.LogInformation("Пользователь с ID: {UserId} успешно обновлён", id);
+            return userEntity.Map();
+        }
         public UserEntity GetUserEntity(User user)
         {
             var entity = user.Map();

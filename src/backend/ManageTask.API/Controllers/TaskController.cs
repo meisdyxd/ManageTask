@@ -164,10 +164,5 @@ namespace ManageTask.API.Controllers
                 .LogErrorMessages(logLevel: LogLevel.Warning)
                 .ToResponse();
         }
-        [HttpPost("health")]
-        public  IActionResult Health(RequestTask task)
-        {
-            return Ok();
-        }
     }
 }
