@@ -1,0 +1,6 @@
+import React from 'react';
+// ... ваш код компонента ...
+
+export const TaskItem = () => {
+  // ... реализация ...
+};
