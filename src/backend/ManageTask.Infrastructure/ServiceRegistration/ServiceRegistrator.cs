@@ -42,7 +42,6 @@ namespace ManageTask.Infrastructure.ServiceRegistration
         private static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddPostgresDataAccess<DataContext, DataContextConfigurator>();
-
             return services;
         }
         private static IServiceCollection AddRepositories(this IServiceCollection services)

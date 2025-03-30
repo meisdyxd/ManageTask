@@ -1,7 +1,10 @@
 using ManageTask.API.Extensions;
 using ManageTask.Application.ServiceRegistration;
+using ManageTask.Infrastructure.Data.Contexts;
 using ManageTask.Infrastructure.ServiceRegistration;
 using ManageTask.Infrastructure.SignalR;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +21,11 @@ services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy
-              .WithOrigins("http://localhost:3000")
+        policy.SetIsOriginAllowed(origin => true)  // Разрешаем любые origin
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials()
-              .WithExposedHeaders("Authorization", "Refresh-Token");
+              .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
     });
 });
 
@@ -32,11 +34,18 @@ services
     .AddInfrastructure(configuration);
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+    dbContext.Database.Migrate();
+}
 app.UseResultSharpLogging();
 
 app.UseCors("AllowAll");
-
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.All
+});
 app.UseSwagger();
 app.UseSwaggerUI();
 
